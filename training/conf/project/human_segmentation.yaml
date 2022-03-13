@@ -1,0 +1,25 @@
+name: human_segmentation
+framework: tensorflow
+training:
+  size: [224, 224]
+  size_mult: 1.3
+  batch_size: 64
+  shuffle: true
+  lr: 1e-4
+  epochs: 100
+  semantic_mult: 1.
+  alpha_mult: 10.
+  fusion_mult: 1.
+  test_size: 0.1
+  use_random_background: false
+  prob_background: 0.5
+  probability_hard_aug: 0.1
+  send_images_every: 1000
+model:
+  pretrained_path: null
+  backbone_channels: [32, 32, 32, 64, 128]
+  hr_channels: 32
+dataset:
+  backgrounds_path: dataset/backgrounds
+  image_list_path: dataset/filter_recognitions_3.json
+  path: dataset/selfies_and_masks
