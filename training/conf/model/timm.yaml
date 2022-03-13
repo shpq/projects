@@ -1,0 +1,4 @@
+class_name: timm.create_model
+name: mobilenetv2_120d
+params:
+  pretrained: true
