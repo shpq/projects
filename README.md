@@ -9,6 +9,10 @@
 - generate output model filenames / training description for progress bar with built-in [class Store](./training/store.py) methods
 - convert tf.keras models to coreml and tflite by [coreml](./training/convert/mobile/coreml.py) and [tflite](./training/convert/mobile/tflite.py) modules. Custom usage example in [human segmentation](./training/proj/tensorflow/human_segmentation/utils.py)
 
+## Projects already done:
+- [Human matting (segmentation)](./training/proj/tensorflow/human_segmentation)
+- [MagFace](./training/proj/torch/magface)
+
 ## References:
 - [IceCream](https://github.com/gruns/icecream) - simple variable logging way
 - [Erlemar](https://github.com/Erlemar/pytorch_tempest) - good example of Hydra usage
