@@ -1,0 +1,6 @@
+python-telegram-bot>=13.11
+albumentations>=1.1.0
+opencv-python>=4.5.4
+Pillow>=7.2.0
+hydra>=1.1.1
+dotenv

@@ -1,0 +1,3 @@
+tensorflow_addons>=0.12.0
+coremltools>=5.1.0
+tensorflow>=2.8.0

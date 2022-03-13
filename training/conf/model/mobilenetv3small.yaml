@@ -1,0 +1,8 @@
+tensorflow:
+  class_name: tensorflow.keras.applications.MobileNetV3Small
+  params:
+    alpha: 1.0
+    include_top: false
+    minimalistic: false
+    include_preprocessing: false
+    weights: imagenet
