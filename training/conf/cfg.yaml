@@ -10,6 +10,8 @@ training:
   checkpoints_path: model_checkpoints
 save_info:
   image_path: image_outputs
+model:
+  pretrained_path: null
 hydra:
   run:
     dir: proj/${project.framework}/${project.name}/outputs/${now:%Y-%m-%d}/${now:%H-%M-%S}
