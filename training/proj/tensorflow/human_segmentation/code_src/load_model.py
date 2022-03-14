@@ -8,7 +8,7 @@ def get_model(cfg):
     Create tf.keras model with functional API to convert further into tflite
     """
     image_size = cfg.project.training.size
-    model_cfg = cfg.model.tensorflow
+    model_cfg = cfg.model
     src = tf.keras.layers.Input(shape=(*image_size, 3))
     model = load_obj(model_cfg.class_name)(
         **model_cfg.params, input_tensor=src

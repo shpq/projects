@@ -1,7 +1,6 @@
-tensorflow:
-  class_name: tensorflow.keras.applications.mobilenet_v2.MobileNetV2
-  params:
-    alpha: 1.0
-    include_top: false
-    weights: imagenet
-    pooling: avg
+class_name: tensorflow.keras.applications.mobilenet_v2.MobileNetV2
+params:
+  alpha: 1.0
+  include_top: false
+  weights: imagenet
+  pooling: avg
