@@ -8,6 +8,7 @@
 - sending training information messages / plots / images to your [telegram-bot](https://github.com/python-telegram-bot/python-telegram-bot) with [class Telegram](./training/telegram_notifier.py). Load telegram credentials via environment variables or [dotenv](https://pypi.org/project/python-dotenv/)
 - generate output model filenames / training description for progress bar with built-in [class Store](./training/store.py) methods
 - convert tf.keras models to coreml and tflite by [coreml](./training/convert/mobile/coreml.py) and [tflite](./training/convert/mobile/tflite.py) modules. Custom usage example in [human segmentation](./training/proj/tensorflow/human_segmentation/utils.py)
+- create torch backbone models with [timm](https://github.com/rwightman/pytorch-image-models/), tensorflow by tf.keras.applications from [configs](./training/conf/model)
 
 ## Projects already done:
 - [Human matting (segmentation)](./training/proj/tensorflow/human_segmentation)

@@ -7,6 +7,7 @@ from proj.tensorflow.human_segmentation.code_src.utils import (
 from proj.tensorflow.human_segmentation.code_src.load_model import get_model
 from proj.tensorflow.human_segmentation.code_src.losses import Loss
 from telegram_notifier import bot
+from utils import load_obj
 from store import Store
 import tensorflow as tf
 from tqdm import tqdm
@@ -20,7 +21,6 @@ def train(cfg):
     data_generators = {m: DataGenerator(cfg, m) for m in modes}
     model = get_model(cfg)
 
-    optimizer = tf.keras.optimizers.Adam(learning_rate=cfg.project.training.lr)
 
     model.build(
         (cfg.project.training.batch_size, *cfg.project.training.size, 3)
@@ -34,7 +34,14 @@ def train(cfg):
         model.load_weights(pretrained_path)
 
     os.makedirs(cfg.training.checkpoints_path, exist_ok=True)
-
+    if cfg.scheduler is not None:
+        scheduler_cfg = cfg.scheduler.tensorflow
+        learning_rate = load_obj(scheduler_cfg.class_name)(
+                cfg.project.training.lr, **scheduler_cfg.params
+            )
+    else:
+        learning_rate = cfg.project.training.lr
+    optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
     train_model(cfg, model, data_generators, optimizer, loss)
 
 

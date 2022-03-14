@@ -1,0 +1,5 @@
+tensorflow:
+  class_name: tensorflow.keras.optimizers.schedules.CosineDecay
+  params:
+    decay_steps: 10
+    alpha: 0.0

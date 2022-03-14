@@ -26,7 +26,7 @@ def get_error_message(error) -> str:
 
     """
     message = str(error.__class__.__name__)
-    if e.args:
+    if error.args:
         message += f": {error.args[0]}"
     return message
 
