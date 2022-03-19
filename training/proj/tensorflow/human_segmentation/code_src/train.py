@@ -34,13 +34,10 @@ def train(cfg):
         model.load_weights(pretrained_path)
 
     os.makedirs(cfg.training.checkpoints_path, exist_ok=True)
-    if cfg.scheduler is not None:
-        scheduler_cfg = cfg.scheduler.tensorflow
-        learning_rate = load_obj(scheduler_cfg.class_name)(
-                cfg.project.training.lr, **scheduler_cfg.params
-            )
-    else:
-        learning_rate = cfg.project.training.lr
+    scheduler_cfg = cfg.scheduler.tensorflow
+    learning_rate = load_obj(scheduler_cfg.class_name)(
+            cfg.project.training.lr, **scheduler_cfg.params
+        )
     optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
     train_model(cfg, model, data_generators, optimizer, loss)
 
@@ -60,6 +57,7 @@ def train_model(cfg, model, data_generators, optimizer, criterion):
                 tf.cast(trimap, tf.float32),
             )
             loss_value, semantic_loss, alpha_loss, fusion_loss = loss_value
+
         if send:
             bot.send_images(
                 [images, pred_fusion, pred_global, pred_local],

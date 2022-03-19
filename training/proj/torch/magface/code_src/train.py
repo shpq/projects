@@ -3,8 +3,8 @@ from proj.torch.magface.code_src.dataset import Dataset
 from proj.torch.magface.code_src.utils import accuracy
 from proj.torch.magface.code_src.losses import Loss
 from torch.utils.data import DataLoader
-from torch.optim import lr_scheduler
 from telegram_notifier import bot
+from utils import load_obj
 from store import Store
 from tqdm import tqdm
 import logging
@@ -36,9 +36,14 @@ def train(cfg):
     model = model.cuda()
     logging.info("making checkpoints_path")
     os.makedirs(cfg.training.checkpoints_path, exist_ok=True)
-    optimizer_cfg = cfg.project.training.scheduler
     framework = cfg.project.framework
-    scheduler = lr_scheduler.ReduceLROnPlateau(optimizer, **optimizer_cfg)
+    scheduler_cfg = cfg.scheduler.torch
+    if scheduler_cfg.class_name != "lr":
+        scheduler = load_obj(scheduler_cfg.class_name)(
+                optimizer, **scheduler_cfg.params
+            )
+    else:
+        scheduler = None
     lambda_g = cfg.project.training.lambda_g
     st = Store(framework=framework)
     log_values = ["loss", "loss_id", "loss_g", "acc1", "acc5"]
@@ -87,4 +92,5 @@ def train(cfg):
                 bot.send_message(message)
                 bot.send_plots(st.get_global(log_values))
                 torch.save(model.state_dict(), save_path)
-                scheduler.step(loss)
+                if scheduler is not None:
+                    scheduler.step(loss)

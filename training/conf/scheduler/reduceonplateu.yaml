@@ -4,9 +4,8 @@ tensorflow:
     decay_steps: 10
     alpha: 0.0
 torch:
-  class_name: torch.optim.lr_scheduler.CosineAnnealingLR
+  class_name: torch.optim.lr_scheduler.ReduceLROnPlateau
   params:
-    T_max: 10
-    eta_min: 0
-    last_epoch: -1
-    verbose: false
+    factor: 0.1
+    patience: 3
+    mode: max

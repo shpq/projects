@@ -13,8 +13,12 @@
 ## Projects already done:
 - [Human matting (segmentation)](./training/proj/tensorflow/human_segmentation)
 - [MagFace](./training/proj/torch/magface)
+- [Age Coral](./training/proj/torch/age_coral)
 
 ## References:
 - [IceCream](https://github.com/gruns/icecream) - simple variable logging way
 - [Erlemar](https://github.com/Erlemar/pytorch_tempest) - good example of Hydra usage
 - [kedro](https://github.com/quantumblacklabs/kedro) - importing modules from configs
+
+## TODO:
+- add model inference code generation from outputs folder

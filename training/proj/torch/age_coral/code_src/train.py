@@ -1,6 +1,7 @@
-from proj.frmwrk.example_project.code_src.dataset import Dataset
-from proj.frmwrk.example_project.code_src.losses import Loss
-from proj.frmwrk.example_project.code_src.load_model import Model
+from proj.torch.age_coral.code_src.utils import calculate_log1p
+from proj.torch.age_coral.code_src.load_model import Model
+from proj.torch.age_coral.code_src.dataset import Dataset
+from proj.torch.age_coral.code_src.losses import Loss
 from torch.utils.data import DataLoader
 
 # from torch.optim import lr_scheduler
@@ -43,8 +44,8 @@ def train(cfg):
     # else:
     #     scheduler = None
     st = Store(framework=framework)
-    log_values = ["loss"]
-    save_values = ["loss"]
+    log_values = ["loss", "mae_log1p"]
+    save_values = ["loss", "mae_log1p"]
     for epoch in range(cfg.project.training.epochs):
         for mode in modes:
             maxlen = 200 if mode == "train" else None
@@ -57,14 +58,15 @@ def train(cfg):
             loader = dataloaders[mode]
 
             pbar = tqdm(enumerate(loader), total=len(loader))
-            for i, (inputs, targets) in pbar:
-                inputs, targets = inputs.cuda(), targets.cuda()
+            for i, (inputs, targets, levels) in pbar:
+                inputs, targets, = inputs.cuda(), targets.cuda()
+                levels = levels.cuda()
                 with torch.set_grad_enabled(mode == "train"):
-                    outputs = model(inputs)
-                    loss = criterion(outputs, targets)
+                    logits, probas = model(inputs)
+                    loss = criterion(logits, levels)
                 st.add_value(loss)
-                # measure accucary
-                # accuracy = 0
+                mae_log1p = calculate_log1p(probas, targets)
+                st.add_value(mae_log1p)
 
                 if mode == "train":
                     optimizer.zero_grad()
