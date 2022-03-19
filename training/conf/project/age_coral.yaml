@@ -1,0 +1,16 @@
+name: age_coral
+framework: torch
+training:
+  size: [112, 112]
+  batch_size: 64
+  shuffle: true
+  lr: 1e-3
+  epochs: 100
+  test_size: 0.1
+  p_augs: 0.1
+model:
+  pretrained_path: null
+  dropout: 0.3
+dataset:
+  path: dataset
+  num_classes: 50
