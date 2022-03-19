@@ -1,0 +1,6 @@
+tensorflow:
+  class_name: float
+  params: {}
+torch:
+  class_name: lr
+  params: {}

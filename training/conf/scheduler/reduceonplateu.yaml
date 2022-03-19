@@ -1,0 +1,11 @@
+tensorflow:
+  class_name: tensorflow.keras.optimizers.schedules.CosineDecay
+  params:
+    decay_steps: 10
+    alpha: 0.0
+torch:
+  class_name: torch.optim.lr_scheduler.ReduceLROnPlateau
+  params:
+    factor: 0.1
+    patience: 3
+    mode: max
