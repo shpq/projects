@@ -16,6 +16,7 @@ training:
   probability_hard_aug: 0.1
   send_images_every: 1000
 model:
+  pretrained_path: null
   backbone_channels: [32, 32, 32, 64, 128]
   hr_channels: 32
 dataset:
