@@ -47,7 +47,7 @@ class Store:
                 value_to_add = value.item()
             except Exception as e:
                 message = get_error_message(e)
-                logging.info(message)
+                logging.debug(message)
                 value_to_add = value
         elif self.framework == "tensorflow":
             value_to_add = value
