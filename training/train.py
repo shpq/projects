@@ -50,11 +50,17 @@ def change_project_paths(d: Any, proj_name: str, framework: str) -> DictConfig:
         for k, v in d.items():
             if isinstance(v, str):
                 if k.endswith("path"):
-                    dirs = os.path.join(*v.split("/"))
+                    sep = "/" if "/" in v else "\\"
+                    dirs = os.path.join(*v.split(sep))
                     hydra_cwd = hydra.utils.get_original_cwd()
-                    d[k] = os.path.join(
-                        hydra_cwd, "proj", framework, proj_name, dirs
-                    )
+                    # some paths can be created using terminal search
+                    # so we handle this situation using simple logic
+                    if not dirs.startswith("proj"):
+                        d[k] = os.path.join(
+                            hydra_cwd, "proj", framework, proj_name, dirs
+                        )
+                    else:
+                        d[k] = os.path.join(hydra_cwd, dirs)
             else:
                 d[k] = change_project_paths(v, proj_name, framework)
         return d
