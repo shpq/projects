@@ -1,3 +1,4 @@
+from pydoc import locate
 from typing import Any
 from PIL import Image
 import importlib
@@ -23,7 +24,7 @@ def load_train_module(project: str, framework: str) -> Any:
 
 def get_error_message(error) -> str:
     """
-
+    Returns error message for error with simple structure
     """
     message = str(error.__class__.__name__)
     if error.args:
@@ -35,6 +36,11 @@ def load_obj(obj_path: str, default_obj_path: str = "") -> Any:
     Extract an object from a given path.
     Copied from https://github.com/quantumblacklabs/kedro
     """
+
+    # for python built-in types
+    if not "." in obj_path:
+        return locate(obj_path)
+
     obj_path_list = obj_path.rsplit(".", 1)
     obj_path = (
         obj_path_list.pop(0) if len(obj_path_list) > 1 else default_obj_path
