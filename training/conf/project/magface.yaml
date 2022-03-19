@@ -11,10 +11,6 @@ training:
     l_a: 10
     u_a: 110
     scale: 64.0
-  scheduler:
-    factor: 0.1
-    patience: 3
-    mode: max
   lambda_g: 35
   last_fc_size: 2011
   epochs: 100

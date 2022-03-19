@@ -3,3 +3,10 @@ tensorflow:
   params:
     decay_steps: 10
     alpha: 0.0
+torch:
+  class_name: torch.optim.lr_scheduler.CosineAnnealingLR
+  params:
+    T_max: 10
+    eta_min: 0
+    last_epoch: -1
+    verbose: false

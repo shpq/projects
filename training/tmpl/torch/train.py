@@ -36,7 +36,12 @@ def train(cfg):
     model = model.cuda()
     logging.info("making checkpoints_path")
     os.makedirs(cfg.training.checkpoints_path, exist_ok=True)
-    # scheduler = lr_scheduler.ReduceLROnPlateau()
+    # if scheduler_cfg != "lr":
+    #     scheduler = load_obj(scheduler_cfg.class_name)(
+    #             optimizer, **scheduler_cfg.params
+    #         )
+    # else:
+    #     scheduler = None
     st = Store(framework=framework)
     log_values = ["loss"]
     save_values = ["loss"]
@@ -75,4 +80,5 @@ def train(cfg):
                 bot.send_message(message)
                 bot.send_plots(st.get_global(log_values))
                 torch.save(model.state_dict(), save_path)
-                # scheduler.step(loss)
+                # if scheduler is not None:
+                #     scheduler.step(loss)
