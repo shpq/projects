@@ -108,6 +108,7 @@ def lr_branch(outputs, backbone_channels):
     lr2, lr4, lr16 = outputs[0], outputs[1], outputs[3]
 
     lr16 = cbam_block(lr16, filters=lr16.shape[-1], ratio=1 / 4)
+    # lr16 = psa_block(lr16, filters=lr16.shape[-1])
     lr16 = ConvIBNormRelu(lr16, backbone_channels[3], 5)
     lr8 = resize(lr16, scale=2)
     lr8 = ConvIBNormRelu(lr8, backbone_channels[2], 5)
@@ -134,6 +135,7 @@ def hr_branch(src, enc2, enc4, lr8, backbone_channels, hr_channels):
     hr2 = ConvIBNormRelu(tf.concat([hr2, enc2], -1), hr_channels, 3)
     hr = resize(hr2, scale=2)
     hr = ConvIBNormRelu(tf.concat([src, hr], -1), hr_channels, 3)
+    hr = psa_block(hr, filters=hr_channels)
     hr = tf.keras.layers.Conv2D(1, 1, strides=1, padding="same")(hr)
     pred_local = tf.keras.layers.Activation("sigmoid")(hr)
 
@@ -148,7 +150,79 @@ def fusion_branch(src, hr2, lr8, backbone_channels, hr_channels):
     f2 = ConvIBNormRelu(tf.concat([hr2, lr2], -1), hr_channels, 3)
     f = resize(f2, scale=2)
     f = ConvIBNormRelu(tf.concat([f, src], -1), int(hr_channels / 2), 3)
+    f = psa_block(f, filters=int(hr_channels / 2))
     f = tf.keras.layers.Conv2D(1, 1, strides=1, padding="same")(f)
     pred_fusion = tf.keras.layers.Activation("sigmoid")(f)
 
     return pred_fusion
+
+
+
+def psa_block(x, filters):
+
+    inner_filters = filters // 2
+
+    conv_q_left = tf.keras.layers.Conv2D(1, 1, strides=1, padding="same", use_bias=False)
+    conv_v_left = tf.keras.layers.Conv2D(inner_filters, 1, strides=1, padding="same", use_bias=False)
+    conv_up = tf.keras.layers.Conv2D(filters, 1, strides=1, padding="same", use_bias=False)
+
+    conv_q_right = tf.keras.layers.Conv2D(inner_filters, 1, 1, padding="same", use_bias=False)
+    conv_v_right = tf.keras.layers.Conv2D(inner_filters, 1, 1, padding="same", use_bias=False)
+
+    # channel part
+    # [B, H, W, iC]
+    x_channel = conv_v_left(x)
+    b_size, h_size, w_size, c_size = tf.shape(x_channel)
+
+    # [B, H*W, iC]
+    x_channel = tf.reshape(x_channel, [b_size, h_size * w_size, c_size])
+
+    # [B, H, W, 1]
+    context_mask = conv_q_left(x)
+
+    # [B, H*W, 1]
+    context_mask = tf.reshape(context_mask, [b_size, h_size * w_size, 1])
+
+    # [B, H*W, 1]
+    context_mask = tf.keras.layers.Softmax(axis=1)(context_mask)
+
+    # [B, iC, 1]
+    context_channel = tf.linalg.matmul(x_channel, context_mask, transpose_a=True)
+
+    # [B, 1, 1, iC]
+    context_channel = tf.reshape(context_channel, [b_size, 1, 1, inner_filters])
+
+    # [B, 1, 1, C]
+    context_channel = conv_up(context_channel)
+
+    # [B, 1, 1, C]
+    mask_channels = tf.keras.activations.sigmoid(context_channel)
+
+    # spatial part
+
+    # [B, H, W, iC]
+    g_x = conv_q_right(x)
+    _, h_size, w_size, _ = tf.shape(g_x)
+
+    # [B, 1, 1, iC]
+    avg_x = tf.keras.layers.GlobalAveragePooling2D(keepdims=True)(g_x)
+
+    # [B, 1, iC]
+    avg_x = tf.reshape(avg_x, [b_size, 1, c_size])
+
+    # [B, 1, iC]
+    avg_x = tf.keras.layers.Softmax(axis=2)(avg_x)
+
+    # [B, H*W, iC]
+    theta_x = tf.reshape(conv_v_right(x), [b_size, h_size * w_size, inner_filters])
+
+    # [B, 1, H*W]
+    context_channel = tf.linalg.matmul(avg_x, theta_x, transpose_b=True)
+
+    # [B, H, W, 1]
+    context_channel = tf.reshape(context_channel, [b_size, h_size, w_size, 1])
+
+    # [B, H, W, 1]
+    mask_spatial = tf.keras.activations.sigmoid(context_channel)
+
+    return x * mask_channels + x * mask_spatial
