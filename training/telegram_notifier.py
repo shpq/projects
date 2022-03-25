@@ -21,6 +21,7 @@ class Telegram:
     def __init__(self, token: str, chat_id: str):
         self.bot = telegram.Bot(token=token)
         self.chat_id = chat_id
+        self.project = None
 
     def send_plots(self, values):
         """
@@ -146,7 +147,12 @@ class Telegram:
         Send text message to bot
         """
         logging.info(message)
+        if self.project is not None:
+            message = f"{self.project}:\n" + message
         self.bot.send_message(text=message, chat_id=self.chat_id)
+
+    def set_project(self, project):
+        self.project = project
 
 
 bot = Telegram(os.getenv("TELEGRAM_TOKEN"), os.getenv("TELEGRAM_CHAT_ID"))

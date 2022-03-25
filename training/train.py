@@ -1,4 +1,5 @@
 from utils import load_train_module
+from telegram_notifier import bot
 from omegaconf import DictConfig
 from typing import Any
 import warnings
@@ -81,6 +82,8 @@ def run(cfg: DictConfig) -> None:
 
     # start training
     train_module(cfg)
+    # set project
+    bot.set_project(cfg.project.name)
 
 
 # python train.py project=test model=timm
