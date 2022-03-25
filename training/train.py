@@ -1,4 +1,4 @@
-from utils import load_train_module
+from utils import load_train_module, get_error_message
 from telegram_notifier import bot
 from omegaconf import DictConfig
 from typing import Any
@@ -80,10 +80,19 @@ def run(cfg: DictConfig) -> None:
     # load train module
     train_module = load_train_module(cfg.project.name, cfg.project.framework)
 
-    # start training
-    train_module(cfg)
     # set project
     bot.set_project(cfg.project.name)
+
+    try:
+        # start training
+        train_module(cfg)
+    except Exception as e:
+        error_message = get_error_message(e)
+        # catch error, gen error message and send it to telegram bot
+        bot.send_message(error_message)
+        # after it raise error again
+        raise e
+
 
 
 # python train.py project=test model=timm

@@ -75,13 +75,13 @@ class Telegram:
             image = image.detach().cpu()
         except Exception as e:
             message = get_error_message(e)
-            logging.info(message)
+            # logging.info(message)
         try:
             # both torch and tf have this method
             image = image.numpy()
         except Exception as e:
             message = get_error_message(e)
-            logging.info(message)
+            # logging.info(message)
 
         if isinstance(image, (np.ndarray, np.generic)):
             if len(image.shape) == 4:

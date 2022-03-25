@@ -125,7 +125,7 @@ def train_model(cfg, model, data_generators, optimizer, criterion):
 
                 # set description
                 pbar.set_description(st.training_description)
-
+            generator.on_epoch_end()
             st.save_global()
 
             if mode == "test":
