@@ -1,7 +1,7 @@
 defaults:
   - _self_
   - project: test
-  - scheduler: cosine
+  - scheduler: lr
   - model: mobilenetv2
 general:
   save_code: true
