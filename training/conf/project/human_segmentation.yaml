@@ -21,5 +21,5 @@ model:
   hr_channels: 32
 dataset:
   backgrounds_path: dataset/backgrounds
-  image_list_path: dataset/filter_recognitions_3.json
+  image_list_path: dataset/filter_recognitions_2.json
   path: dataset/selfies_and_masks

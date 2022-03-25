@@ -1,6 +1,7 @@
 from pydoc import locate
 from typing import Any
 from PIL import Image
+import traceback
 import importlib
 
 
@@ -27,8 +28,10 @@ def get_error_message(error) -> str:
     Returns error message for error with simple structure
     """
     message = str(error.__class__.__name__)
+    traceback_message = traceback.format_exc()
     if error.args:
         message += f": {error.args[0]}"
+    message += f"\n{traceback_message}"
     return message
 
 def load_obj(obj_path: str, default_obj_path: str = "") -> Any:

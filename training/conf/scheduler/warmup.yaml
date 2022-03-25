@@ -1,0 +1,5 @@
+tensorflow:
+  class_name: tensorflow.keras.optimizers.schedules.PolynomialDecay
+  params:
+    decay_steps: 1000
+    end_learning_rate: 1e-4
