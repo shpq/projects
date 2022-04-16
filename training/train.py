@@ -1,4 +1,4 @@
-from utils import load_train_module, get_error_message
+from utils import load_train_module, get_error_message, seed_everything
 from telegram_notifier import bot
 from omegaconf import DictConfig
 from typing import Any
@@ -52,16 +52,22 @@ def change_project_paths(d: Any, proj_name: str, framework: str) -> DictConfig:
             if isinstance(v, str):
                 if k.endswith("path"):
                     sep = "/" if "/" in v else "\\"
-                    dirs = os.path.join(*v.split(sep))
+                    if os.path.isabs(v):
+                        dirs = v
+                    else:
+                        dirs = os.path.join(*v.split(sep))
                     hydra_cwd = hydra.utils.get_original_cwd()
                     # some paths can be created using terminal search
                     # so we handle this situation using simple logic
-                    if not dirs.startswith("proj"):
+                    if dirs.startswith("proj"):
+                        d[k] = os.path.join(hydra_cwd, dirs)
+                    elif os.path.isabs(dirs):
+                        d[k] = dirs
+                    else:
                         d[k] = os.path.join(
                             hydra_cwd, "proj", framework, proj_name, dirs
                         )
-                    else:
-                        d[k] = os.path.join(hydra_cwd, dirs)
+
             else:
                 d[k] = change_project_paths(v, proj_name, framework)
         return d
@@ -80,6 +86,8 @@ def run(cfg: DictConfig) -> None:
     # load train module
     train_module = load_train_module(cfg.project.name, cfg.project.framework)
 
+    seed_everything(cfg.project.framework)
+
     # set project
     bot.set_project(cfg.project.name)
 
@@ -92,7 +100,6 @@ def run(cfg: DictConfig) -> None:
         bot.send_message(error_message)
         # after it raise error again
         raise e
-
 
 
 # python train.py project=test model=timm

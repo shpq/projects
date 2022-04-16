@@ -36,7 +36,7 @@ class Telegram:
         """
         Send plot if it can be plotted
         """
-        can_be_plotted = all(len(v) > 1 for _, v in values.items())
+        can_be_plotted = all(len(v) > 1 for _, v in values.items()) and values
         if not can_be_plotted:
             return
         image_bytes = io.BytesIO()
@@ -48,7 +48,10 @@ class Telegram:
         plt.legend()
         plt.savefig(image_bytes, format="PNG")
         image_bytes.seek(0)
-        self.bot.send_photo(photo=image_bytes, chat_id=self.chat_id)
+        try:
+            self.bot.send_photo(photo=image_bytes, chat_id=self.chat_id)
+        except:
+            pass
 
     def renorm_photo(self, image, norm):
         """
@@ -64,7 +67,7 @@ class Telegram:
         image = (image - l) * 255 / (r - l)
         return image.round().astype("uint8")
 
-    def send_photo(self, image, norm, size=None, save_path=None):
+    def send_photo(self, image, norm=None, size=None, save_path=None):
         """
         Resize and send image with custom normalization, save in save_path
         folder with simple enumerate naming
@@ -140,7 +143,10 @@ class Telegram:
         if not isinstance(size, list):
             size = [size] * len(images)
         for image, n, s in zip(images, norm, size):
-            self.send_photo(image, norm=n, size=s, save_path=save_path)
+            try:
+                self.send_photo(image, norm=n, size=s, save_path=save_path)
+            except:
+                pass
 
     def send_message(self, message=None):
         """
@@ -149,7 +155,11 @@ class Telegram:
         logging.info(message)
         if self.project is not None:
             message = f"{self.project}:\n" + message
-        self.bot.send_message(text=message, chat_id=self.chat_id)
+        try:
+            self.bot.send_message(text=message, chat_id=self.chat_id)
+        except Exception as e:
+            message = get_error_message(e)
+            logging.debug(message)
 
     def set_project(self, project):
         self.project = project
