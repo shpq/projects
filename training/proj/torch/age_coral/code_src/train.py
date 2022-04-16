@@ -53,7 +53,7 @@ def train(cfg):
             st.add_value(mode), st.add_value(epoch)
             if mode == "train":
                 model.train()
-            elif mode == "val":
+            elif mode == "test":
                 model.eval()
             loader = dataloaders[mode]
 

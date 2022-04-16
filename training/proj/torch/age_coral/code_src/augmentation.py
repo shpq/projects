@@ -31,7 +31,6 @@ class Augmentation:
             A.JpegCompression(p=self.p),
             A.Cutout(p=self.p),
             A.GaussNoise(var_limit=(0, 50), p=self.p),
-            A.ToGray(p=self.p),
             A.Normalize(),
             ToTensorV2(),
         ]
