@@ -45,5 +45,5 @@ class Loss:
             tf.multiply(image, pred_boundary_matte), tf.multiply(image, target)
         )
         fusion_loss = fusion_loss + fusion_comp_loss
-        loss = semantic_loss + self.alpha_mult * alpha_loss + fusion_loss
+        loss = self.semantic_mult * semantic_loss + self.alpha_mult * alpha_loss + self.fusion_mult *fusion_loss
         return loss, semantic_loss, alpha_loss, fusion_loss
